@@ -36,6 +36,13 @@ function startGame() {
     setBoardHoverClass()
     winningMessageElement.classList.remove('show')
 }
+function isDraw() {
+    return [...cellElements].every(cell => {
+        return cell.classList.contains(X_CLASS) ||
+        cell.classList.contains(CIRCLE_CLASS)
+})
+}
+
 function handleClick(e) {
         // placeMark
         // check for win
@@ -44,9 +51,23 @@ function handleClick(e) {
 const cell = e.target
 const currentClass = circleTurn ? CIRCLE_CLASS : X_CLASS
 placeMark(cell, currentClass)
-swapTurns()
-setBoardHoverClass()
-    console.log('clicked')
+if (checkWin(currentClass)) {
+    endGame(false)
+} else if (isDraw()) {
+    endGame(true)
+} else {
+    swapTurns()
+    setBoardHoverClass()
+}
+}
+
+function endGame(draw) {
+    if (draw){
+        winningMessageTextElement.innerText = 'Draw!'
+    } else {
+        winningMessageTextElement.innerText = `${circleTurn ? "O's" : "X's"} Wins!`
+    }
+    winningMessageElement.classList.add('show')
 }
 
 function placeMark(cell, currentClass) {
@@ -66,3 +87,11 @@ function setBoardHoverClass() {
         board.classList.add(X_CLASS)
     }
 }
+
+function checkWin(currentClass) {
+    return WINNING_COMBINATIONS.some(combination => {
+      return combination.every(index => {
+        return cellElements[index].classList.contains(currentClass)
+      })
+    })
+  }
